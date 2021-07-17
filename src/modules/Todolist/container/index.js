@@ -6,6 +6,10 @@ import { TodoContext } from "../contextAPI";
 
 const firebaseConn = firebaseConnect(COLLECTION_TODOS);
 
+const getToggleValue = (value) => {
+    return value === valueOfTask.DONE ? valueOfTask.ACTIVE : valueOfTask.DONE;
+};
+
 export const TodolistContainer = (props) => {
     const [dataState, setData] = useState(null);
     const [toggle, setToggle] = useState(valueOfTask.ACTIVE);
@@ -13,7 +17,7 @@ export const TodolistContainer = (props) => {
 
     const handleAddItem = (newItem) => {
         const item = { name: newItem, isActive: valueOfTask.ACTIVE };
-        firebaseConn.setItem(item).then(() => {
+        firebaseConn.setItem(item, () => {
             handleGetList();
             setFilter(valueFilterBtns.ALL);
         });
@@ -21,20 +25,30 @@ export const TodolistContainer = (props) => {
 
     const onChangeCheckbox = (checked, item) => {
         const isActive = checked ? valueOfTask.DONE : valueOfTask.ACTIVE;
-        firebaseConn.updateItem(item.id, { isActive }).then(() => handleGetList());
+        firebaseConn.updateItem(item.id, { isActive }, () => handleGetList());
     };
 
     const onClickToggleAll = () => {
-        const toggleValue = toggle === valueOfTask.DONE ? valueOfTask.ACTIVE : valueOfTask.DONE;
-        firebaseConn
-            .updateAll({
-                isActive: toggleValue
-            })
-            .then(() => {
-                handleGetList();
-                setToggle(toggleValue);
-                setFilter(valueFilterBtns.ALL);
-            });
+        if (!dataState && dataState.length === 0) return;
+
+        let toggleValue = getToggleValue(toggle);
+        dataState.map((item) => {
+            item.isActive = toggleValue;
+            return item;
+        });
+        if (filter !== valueFilterBtns.ALL) {
+            toggleValue = getToggleValue(filter);
+            dataState
+                .filter((item) => item.isActive === filter)
+                .map((item) => {
+                    item.isActive = toggleValue;
+                    return item;
+                });
+        }
+        firebaseConn.updateList(dataState, () => {
+            setToggle(toggleValue);
+            handleGetList();
+        });
     };
 
     const handleFilterItem = (filterValue) => {
@@ -42,7 +56,7 @@ export const TodolistContainer = (props) => {
     };
 
     const handleRemoveItem = (id) => {
-        firebaseConn.deleteItem(id).then(() => {
+        firebaseConn.deleteItem(id, () => {
             handleGetList();
         });
     };

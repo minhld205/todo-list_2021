@@ -3,7 +3,6 @@ import styled from "styled-components";
 import { Checkbox } from "../../../components/Checkbox";
 import { valueFilterBtns, valueOfTask } from "../constant";
 import { withContextTodolist } from "../contextAPI";
-import { ButtonToggle } from "./ButtonToggle";
 
 const WrapperTasklisting = styled.div`
     text-align: left;
@@ -87,7 +86,6 @@ export const TasklistingDefault = (props) => {
                     handleRemoveItem={props.handleRemoveItem}
                     onChange={props.onChangeCheckbox}
                 />
-                <ButtonToggle />
             </WrapperTasklisting>
         ) : (
             <div className={"empty-data"}>{"no data"}</div>

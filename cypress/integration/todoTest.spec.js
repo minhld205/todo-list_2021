@@ -9,11 +9,11 @@ describe("Test to-do app", () => {
     beforeEach(() => {
         cy.visit("http://localhost:3000/");
         cy.get(".input-todo").type(`${newItem}{enter}`);
-        cy.wait(1500);
+        cy.wait(2000);
     });
 
     afterEach(() => {
-        cy.wait(1500);
+        cy.wait(2000);
     });
 
     it("check components loaded", () => {
@@ -35,29 +35,29 @@ describe("Test to-do app", () => {
     it("should delete item", () => {
         cy.get(itemInputCheckbox).should("have.length", 1);
         cy.get(".remove-item").click();
-        cy.wait(1500);
+        cy.wait(2000);
         cy.get(".App").find(".empty-data").should("have.text", "no data");
     });
 
     it("should click checkbox", () => {
         cy.get(itemInputCheckbox).find('[type="checkbox"]').click();
-        cy.wait(1500);
+        cy.wait(2000);
         cy.get(itemInputCheckbox).find('[type="checkbox"]').should("be.checked");
         cy.get(itemInputCheckbox).find('[type="checkbox"]').click();
-        cy.wait(1500);
+        cy.wait(2000);
         cy.get(itemInputCheckbox).find('[type="checkbox"]').should("be.not.checked");
         cy.get(".remove-item").click();
     });
 
     it("should click button toggle check all", () => {
         cy.get(".input-todo").type(`${newItem}{enter}`);
-        cy.wait(1500);
+        cy.wait(2000);
         cy.contains("Toggle All").click();
-        cy.wait(1500);
+        cy.wait(2000);
         cy.get(itemInputCheckbox).should("have.length", 2);
         cy.get(itemInputCheckbox).find('[type="checkbox"]').should("be.checked");
         cy.contains("Toggle All").click();
-        cy.wait(1500);
+        cy.wait(2000);
         cy.get(itemInputCheckbox).should("have.length", 2);
         cy.get(itemInputCheckbox).find('[type="checkbox"]').should("be.not.checked");
         cy.get(".remove-item").first().click();
@@ -66,9 +66,9 @@ describe("Test to-do app", () => {
 
     it("should select filter", () => {
         cy.get(".input-todo").type(`${newItem}{enter}`);
-        cy.wait(1500);
+        cy.wait(2000);
         cy.get(itemInputCheckbox).find('[type="checkbox"]').first().click();
-        cy.wait(1500);
+        cy.wait(2000);
         cy.contains("DONE").click();
         cy.get(itemInputCheckbox).should("have.length", 1);
         cy.contains("ACTIVE").click();

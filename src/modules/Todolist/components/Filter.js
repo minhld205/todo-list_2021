@@ -35,7 +35,7 @@ export const FilterDefault = (props) => {
                 })}
             </WrapperFilterStyled>
         );
-    }, [props.filter]);
+    }, [props.data, props.filter]);
 };
 
 export const Filter = withContextTodolist(FilterDefault);
