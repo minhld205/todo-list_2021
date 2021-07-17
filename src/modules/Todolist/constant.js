@@ -4,9 +4,9 @@ export const valueOfTask = {
 };
 
 export const valueFilterBtns = {
-    ALL: 69,
-    DONE: 2,
-    ACTIVE: 1
+    ALL: 666,
+    DONE: valueOfTask.DONE,
+    ACTIVE: valueOfTask.ACTIVE
 };
 
 export const filterBtns = [

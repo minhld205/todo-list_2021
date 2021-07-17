@@ -67,7 +67,7 @@ const Listing = ({ data, filter, handleRemoveItem, onChange }) => {
                         label={item.name}
                         handleRemoveItem={handleRemoveItem}
                         checked={item.isActive === valueOfTask.DONE}
-                        onChange={onChange}
+                        onChange={(checked) => onChange(checked, item)}
                     />
                 ) : null
             )}
@@ -76,6 +76,8 @@ const Listing = ({ data, filter, handleRemoveItem, onChange }) => {
 };
 
 export const TasklistingDefault = (props) => {
+    if (props.data === null) return <div>...loading</div>;
+
     return useMemo(() => {
         return props.data && props.data.length ? (
             <WrapperTasklisting>

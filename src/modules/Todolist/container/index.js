@@ -1,48 +1,61 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { COLLECTION_TODOS } from "../../../services/firebase";
+import { firebaseConnect } from "../../../utils";
 import { valueFilterBtns, valueOfTask } from "../constant";
-import { initData, TodoContext } from "../contextAPI";
+import { TodoContext } from "../contextAPI";
 
-let genItemId = 9;
+const firebaseConn = firebaseConnect(COLLECTION_TODOS);
 
 export const TodolistContainer = (props) => {
-    const [dataState, setData] = useState(initData.data);
+    const [dataState, setData] = useState(null);
     const [toggle, setToggle] = useState(valueOfTask.ACTIVE);
     const [filter, setFilter] = useState(valueFilterBtns.ALL);
 
     const handleAddItem = (newItem) => {
-        let newData = [...dataState];
-        newData.push({ id: ++genItemId, name: newItem, isActive: valueOfTask.ACTIVE });
-        setData(newData);
-        setFilter(valueFilterBtns.ALL);
-    };
-
-    const onChangeCheckbox = (checked, id) => {
-        const newData = dataState.map((item) => {
-            let newItem = item;
-            if (item.id === id && checked) {
-                newItem = { ...newItem, isActive: valueOfTask.DONE };
-            }
-            return newItem;
+        const item = { name: newItem, isActive: valueOfTask.ACTIVE };
+        firebaseConn.setItem(item).then(() => {
+            handleGetList();
+            setFilter(valueFilterBtns.ALL);
         });
-        setData(newData);
     };
 
-    const handleRemoveItem = (id) => {
-        const newData = dataState.filter((item) => item.id !== id);
-        setData(newData);
+    const onChangeCheckbox = (checked, item) => {
+        const isActive = checked ? valueOfTask.DONE : valueOfTask.ACTIVE;
+        firebaseConn.updateItem(item.id, { isActive }).then(() => handleGetList());
     };
 
     const onClickToggleAll = () => {
-        const toggleValue = toggle === valueOfTask.ACTIVE ? valueOfTask.DONE : valueOfTask.ACTIVE;
-        const newData = dataState.map((item) => ({ ...item, isActive: toggleValue }));
-        setData(newData);
-        setToggle(toggleValue);
-        setFilter(valueFilterBtns.ALL);
+        const toggleValue = toggle === valueOfTask.DONE ? valueOfTask.ACTIVE : valueOfTask.DONE;
+        firebaseConn
+            .updateAll({
+                isActive: toggleValue
+            })
+            .then(() => {
+                handleGetList();
+                setToggle(toggleValue);
+                setFilter(valueFilterBtns.ALL);
+            });
     };
 
     const handleFilterItem = (filterValue) => {
         setFilter(filterValue);
     };
+
+    const handleRemoveItem = (id) => {
+        firebaseConn.deleteItem(id).then(() => {
+            handleGetList();
+        });
+    };
+
+    const handleGetList = () => {
+        firebaseConn.getList((data) => {
+            setData(data);
+        });
+    };
+
+    useEffect(() => {
+        handleGetList();
+    }, []);
 
     return (
         <TodoContext.Provider
@@ -54,7 +67,7 @@ export const TodolistContainer = (props) => {
                 onChangeCheckbox,
                 onClickToggleAll,
                 handleFilterItem,
-                handleRemoveItem,
+                handleRemoveItem
             }}
         >
             {props.children}

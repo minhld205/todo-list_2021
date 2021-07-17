@@ -9,7 +9,7 @@ export const ButtonToggleDefault = (props) => {
                 <span>{"Toggle All"}</span>
             </Button>
         );
-    }, [props.toggle]);
+    }, [props.data, props.toggle]);
 };
 
 export const ButtonToggle = withContextTodolist(ButtonToggleDefault);
